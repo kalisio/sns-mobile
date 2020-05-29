@@ -1,17 +1,17 @@
-console.warn('Ensure that SNS_ACCESS_KEY, SNS_KEY_ID and SNS_ANDROID_ARN env vars are set for these tests!\n');
+console.warn('Ensure that SNS_SECRET_ACCESS_KEY, SNS_ACCESS_KEY and SNS_ANDROID_ARN env vars are set for these tests!\n');
 
 var assert = require('assert'),
   AWS = require('aws-sdk'),
   SNS = require('../lib/interface');
 
-var SNS_KEY_ID = process.env['SNS_KEY_ID'],
-  SNS_ACCESS_KEY = process.env['SNS_ACCESS_KEY'],
+var SNS_ACCESS_KEY = process.env['SNS_ACCESS_KEY'],
+  SNS_SECRET_ACCESS_KEY = process.env['SNS_SECRET_ACCESS_KEY'],
   ANDROID_ARN = process.env['SNS_ANDROID_ARN'],
   iOS_ARN = process.env['SNS_iOS_ARN'],
   SNS_REGION = 'eu-west-1';
 
 console.log('Running tests with settings...\n');
-console.log('SNS_KEY_ID: %s\nSNS_ACCESS_KEY: %s\nSNS_ANDROID_ARN: %s\nSNS_iOS_ARN: %s\n', SNS_KEY_ID, SNS_ACCESS_KEY, ANDROID_ARN, iOS_ARN);
+console.log('SNS_ACCESS_KEY: %s\nSNS_SECRET_ACCESS_KEY: %s\nSNS_ANDROID_ARN: %s\nSNS_iOS_ARN: %s\n', SNS_ACCESS_KEY, SNS_SECRET_ACCESS_KEY, ANDROID_ARN, iOS_ARN);
 
 var sns = null;
 
@@ -31,8 +31,8 @@ describe('SNS Module.', function() {
       platform: SNS.SUPPORTED_PLATFORMS.ANDROID,
       region: SNS_REGION,
       apiVersion: '2010-03-31',
-      accessKeyId: SNS_KEY_ID,
-      secretAccessKey: SNS_ACCESS_KEY,
+      accessKeyId: SNS_ACCESS_KEY,
+      secretAccessKey: SNS_SECRET_ACCESS_KEY,
       platformApplicationArn: ANDROID_ARN
     });
 
@@ -44,8 +44,8 @@ describe('SNS Module.', function() {
       platform: SNS.SUPPORTED_PLATFORMS.ANDROID,
       region: SNS_REGION,
       apiVersion: '2010-03-31',
-      accessKeyId: SNS_KEY_ID,
-      secretAccessKey: SNS_ACCESS_KEY,
+      accessKeyId: SNS_ACCESS_KEY,
+      secretAccessKey: SNS_SECRET_ACCESS_KEY,
       platformApplicationArn: ANDROID_ARN
     });
 
@@ -87,8 +87,8 @@ describe('SNS Module.', function() {
       platform: SNS.SUPPORTED_PLATFORMS.ANDROID,
       region: SNS_REGION,
       apiVersion: '2010-03-31',
-      accessKeyId: SNS_KEY_ID,
-      secretAccessKey: SNS_ACCESS_KEY,
+      accessKeyId: SNS_ACCESS_KEY,
+      secretAccessKey: SNS_SECRET_ACCESS_KEY,
       platformApplicationArn: ANDROID_ARN
     });
   });
