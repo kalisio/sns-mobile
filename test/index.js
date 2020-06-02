@@ -1,4 +1,4 @@
-console.warn('Ensure that SNS_SECRET_ACCESS_KEY, SNS_ACCESS_KEY and SNS_ANDROID_ARN env vars are set for these tests!\n');
+console.warn('Ensure that SNS_SECRET_ACCESS_KEY, SNS_ACCESS_KEY, SNS_ANDROID_ARN and SNS_PHONE_NUMBER env vars are set for these tests!\n');
 
 var assert = require('assert'),
   AWS = require('aws-sdk'),
@@ -8,10 +8,8 @@ var SNS_ACCESS_KEY = process.env['SNS_ACCESS_KEY'],
   SNS_SECRET_ACCESS_KEY = process.env['SNS_SECRET_ACCESS_KEY'],
   ANDROID_ARN = process.env['SNS_ANDROID_ARN'],
   iOS_ARN = process.env['SNS_iOS_ARN'],
+  PHONE_NUMBER = process.env['SNS_PHONE_NUMBER'],
   SNS_REGION = 'eu-west-1';
-
-console.log('Running tests with settings...\n');
-console.log('SNS_ACCESS_KEY: %s\nSNS_SECRET_ACCESS_KEY: %s\nSNS_ANDROID_ARN: %s\nSNS_iOS_ARN: %s\n', SNS_ACCESS_KEY, SNS_SECRET_ACCESS_KEY, ANDROID_ARN, iOS_ARN);
 
 var sns = null;
 
@@ -19,7 +17,7 @@ describe('SNS Module.', function() {
   this.timeout(10000);
 
   var theTopicArnThatThisTestCreated;
-  var theSubscriptionArnThatThisTestCreated;
+  var thePushSubscriptionArnThatThisTestCreated, thePhoneSubscriptionArnThatThisTestCreated;
 
   it('Should have events and supported platforms exposed on the interface', function() {
     assert(SNS.SUPPORTED_PLATFORMS);
@@ -218,6 +216,18 @@ describe('SNS Module.', function() {
     });
   });
 
+  it('Should send a message to a phone number.', function(done) {
+    sns.sendMessage(PHONE_NUMBER, {
+      default:'Message title',
+      sms: 'Message body'
+    }, function(err, res) {
+      assert(!err);
+      assert(res);
+      assert.strictEqual(typeof res, 'string');
+      done();
+    })
+  });
+
   it('Should create a topic.', function(done) {
     sns.createTopic('this_is_a_test_dummy_486438735', function(err, topicArn) {
       assert(!err);
@@ -247,9 +257,18 @@ describe('SNS Module.', function() {
       sns.subscribe(endpointArn, theTopicArnThatThisTestCreated, function(err, subscriptionArn) {
         assert(!err);
         assert(subscriptionArn);
-        theSubscriptionArnThatThisTestCreated = subscriptionArn;
+        thePushSubscriptionArnThatThisTestCreated = subscriptionArn;
         done();
       });
+    });
+  });
+
+  it('Should subscribe a phone number to a topic.', function(done) {
+    sns.subscribeWithProtocol(PHONE_NUMBER, theTopicArnThatThisTestCreated, 'sms', function(err, subscriptionArn) {
+      assert(!err);
+      assert(subscriptionArn);
+      thePhoneSubscriptionArnThatThisTestCreated = subscriptionArn;
+      done();
     });
   });
 
@@ -259,7 +278,11 @@ describe('SNS Module.', function() {
       assert(subscriptions);
       assert(subscriptions.length > 0);
       var theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function(subscription) {
-        return subscription.SubscriptionArn === theSubscriptionArnThatThisTestCreated;
+        return subscription.SubscriptionArn === thePushSubscriptionArnThatThisTestCreated;
+      })[0];
+      assert(theSubscriptionThatWasCreatedEarlier)
+      theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function(subscription) {
+        return subscription.SubscriptionArn === thePhoneSubscriptionArnThatThisTestCreated;
       })[0];
       assert(theSubscriptionThatWasCreatedEarlier)
       done();
@@ -272,7 +295,11 @@ describe('SNS Module.', function() {
       assert(subscriptions);
       assert(subscriptions.length > 0);
       var theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function(subscription) {
-        return subscription.SubscriptionArn === theSubscriptionArnThatThisTestCreated;
+        return subscription.SubscriptionArn === thePushSubscriptionArnThatThisTestCreated;
+      })[0];
+      assert(theSubscriptionThatWasCreatedEarlier)
+      theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function(subscription) {
+        return subscription.SubscriptionArn === thePhoneSubscriptionArnThatThisTestCreated;
       })[0];
       assert(theSubscriptionThatWasCreatedEarlier)
       done();
@@ -314,7 +341,8 @@ describe('SNS Module.', function() {
       }),
       'GCM': JSON.stringify({
         some: 'value'
-      })
+      }),
+      'sms': 'SMS for topic'
     }
     sns.publishToTopic(theTopicArnThatThisTestCreated, messageBody, function(err, res) {
       assert(!err);
@@ -325,7 +353,14 @@ describe('SNS Module.', function() {
   });
 
   it('Should unsubscribe a user from a topic.', function(done) {
-    sns.unsubscribe(theSubscriptionArnThatThisTestCreated, function(err) {
+    sns.unsubscribe(thePushSubscriptionArnThatThisTestCreated, function(err) {
+      assert(!err);
+      done();
+    });
+  });
+
+  it('Should unsubscribe a phone number from a topic.', function(done) {
+    sns.unsubscribe(thePhoneSubscriptionArnThatThisTestCreated, function(err) {
       assert(!err);
       done();
     });

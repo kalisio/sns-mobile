@@ -1,9 +1,23 @@
+[![Latest Release](https://img.shields.io/github/v/tag/kalisio/sns-mobile?sort=semver&label=latest)](https://github.com/kalisio/sns-mobile/releases)
+[![Build Status](https://travis-ci.org/kalisio/sns-mobile.png?branch=master)](https://travis-ci.org/kalisio/sns-mobile)
+[![Code Climate](https://codeclimate.com/github/kalisio/sns-mobile/badges/gpa.svg)](https://codeclimate.com/github/kalisio/sns-mobile)
+[![Test Coverage](https://codeclimate.com/github/kalisio/sns-mobile/badges/coverage.svg)](https://codeclimate.com/github/kalisio/sns-mobile/coverage)
+[![Dependency Status](https://img.shields.io/david/kalisio/sns-mobile.svg?style=flat-square)](https://david-dm.org/kalisio/sns-mobile)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # Important Update
-If you were/are using 1.0.0 or 1.0.1 please upgrade to 1.0.2, it fixes a major bug where messages were not sending.
+
+This fork takes the [original work](https://github.com/evanshortiss/sns-mobile) over by:
+* upgrading dependencies (AWS SDK, Asyn,c, Mocha, Node version, etc.)
+* adding support for SMS notifications (as detailled in this unmerged [PR](https://github.com/evanshortiss/sns-mobile/pull/30))
+* adding lint, coverage and publication stages
+* adding Travis CI
 
 # SNS Mobile Push
 
 Module to make interacting with mobile push notifications for iOS and Android easier. Wraps the Amazon aws-sdk node module. The idea is that you can create an object to represent each Platform Application you plan to use and remove the excess features that aren't needed for Android and iOS applications.
+
+> **If you were/are using 1.0.0 or 1.0.1 please upgrade to 1.0.2, it fixes a major bug where messages were not sending.**
 
 ## Installation
 
@@ -358,7 +372,8 @@ Send message to all users. May take some time with large sets of users as it has
 
 
 ## Contributors
-Contrinbutions are very much welcome, just submit a PR with updated tests where 
+
+Contributions are very much welcome, just submit a PR with updated tests where 
 applicable. Current tests run against the actual SNS service, which may not be 
 ideal so feel free to mock that out if you like too ;)
 
@@ -366,4 +381,5 @@ Thanks to these awesome folks for contributions:
 
 * [abiskop](https://github.com/abiskop)
 * [iclems](https://github.com/iclems)
+* [kalisio](https://github.com/kalisio)
 * [race](https://github.com/race)
