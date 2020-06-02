@@ -1,30 +1,31 @@
-console.warn('Ensure that SNS_SECRET_ACCESS_KEY, SNS_ACCESS_KEY, SNS_ANDROID_ARN and SNS_PHONE_NUMBER env vars are set for these tests!\n');
+console.warn('Ensure that SNS_SECRET_ACCESS_KEY, SNS_ACCESS_KEY, SNS_ANDROID_ARN and SNS_PHONE_NUMBER env vars are set for these tests!\n')
 
-var assert = require('assert'),
-  AWS = require('aws-sdk'),
-  SNS = require('../lib/interface');
+var assert = require('assert')
+var AWS = require('aws-sdk')
+var SNS = require('../lib/interface')
 
-var SNS_ACCESS_KEY = process.env['SNS_ACCESS_KEY'],
-  SNS_SECRET_ACCESS_KEY = process.env['SNS_SECRET_ACCESS_KEY'],
-  ANDROID_ARN = process.env['SNS_ANDROID_ARN'],
-  iOS_ARN = process.env['SNS_iOS_ARN'],
-  PHONE_NUMBER = process.env['SNS_PHONE_NUMBER'],
-  SNS_REGION = 'eu-west-1';
+var SNS_ACCESS_KEY = process.env.SNS_ACCESS_KEY
+var SNS_SECRET_ACCESS_KEY = process.env.SNS_SECRET_ACCESS_KEY
+var ANDROID_ARN = process.env.SNS_ANDROID_ARN
+// TODO
+// var iOS_ARN = process.env.SNS_iOS_ARN
+var PHONE_NUMBER = process.env.SNS_PHONE_NUMBER
+var SNS_REGION = 'eu-west-1'
 
-var sns = null;
+var sns = null
 
-describe('SNS Module.', function() {
-  this.timeout(20000);
+describe('SNS Module.', function () {
+  this.timeout(20000)
 
-  var theTopicArnThatThisTestCreated;
-  var thePushSubscriptionArnThatThisTestCreated, thePhoneSubscriptionArnThatThisTestCreated;
+  var theTopicArnThatThisTestCreated
+  var thePushSubscriptionArnThatThisTestCreated, thePhoneSubscriptionArnThatThisTestCreated
 
-  it('Should have events and supported platforms exposed on the interface', function() {
-    assert(SNS.SUPPORTED_PLATFORMS);
-    assert(SNS.EVENTS);
-  });
+  it('Should have events and supported platforms exposed on the interface', function () {
+    assert(SNS.SUPPORTED_PLATFORMS)
+    assert(SNS.EVENTS)
+  })
 
-  it('Should create an instance of Interface', function() {
+  it('Should create an instance of Interface', function () {
     sns = new SNS({
       platform: SNS.SUPPORTED_PLATFORMS.ANDROID,
       region: SNS_REGION,
@@ -32,12 +33,12 @@ describe('SNS Module.', function() {
       accessKeyId: SNS_ACCESS_KEY,
       secretAccessKey: SNS_SECRET_ACCESS_KEY,
       platformApplicationArn: ANDROID_ARN
-    });
+    })
 
-    assert(sns);
-  });
+    assert(sns)
+  })
 
-  it('Should return correct apiVersion, region, PlatformApplicationArn', function() {
+  it('Should return correct apiVersion, region, PlatformApplicationArn', function () {
     sns = new SNS({
       platform: SNS.SUPPORTED_PLATFORMS.ANDROID,
       region: SNS_REGION,
@@ -45,42 +46,42 @@ describe('SNS Module.', function() {
       accessKeyId: SNS_ACCESS_KEY,
       secretAccessKey: SNS_SECRET_ACCESS_KEY,
       platformApplicationArn: ANDROID_ARN
-    });
+    })
 
-    assert(sns);
-    assert(sns.getApiVersion() === '2010-03-31');
-    assert(sns.getRegion() === SNS_REGION);
-    assert(sns.getPlatformApplicationArn() === ANDROID_ARN);
-  });
+    assert(sns)
+    assert(sns.getApiVersion() === '2010-03-31')
+    assert(sns.getRegion() === SNS_REGION)
+    assert(sns.getPlatformApplicationArn() === ANDROID_ARN)
+  })
 
-  it('Should return correct apiVersion, region, PlatformApplicationArn when a custom SNS object is supplied', function() {
+  it('Should return correct apiVersion, region, PlatformApplicationArn when a custom SNS object is supplied', function () {
     sns = new SNS({
       platform: SNS.SUPPORTED_PLATFORMS.ANDROID,
       platformApplicationArn: ANDROID_ARN,
-      sns: new AWS.SNS({region: SNS_REGION, apiVersion: '2010-03-31'})
-    });
+      sns: new AWS.SNS({ region: SNS_REGION, apiVersion: '2010-03-31' })
+    })
 
-    assert(sns);
-    assert(sns.getApiVersion() === '2010-03-31');
-    assert(sns.getRegion() === SNS_REGION);
-    assert(sns.getPlatformApplicationArn() === ANDROID_ARN);
-  });
+    assert(sns)
+    assert(sns.getApiVersion() === '2010-03-31')
+    assert(sns.getRegion() === SNS_REGION)
+    assert(sns.getPlatformApplicationArn() === ANDROID_ARN)
+  })
 
-  it('Should return correct apiVersion, region, PlatformApplicationArn when custom aws params are supplied', function() {
+  it('Should return correct apiVersion, region, PlatformApplicationArn when custom aws params are supplied', function () {
     sns = new SNS({
       platform: SNS.SUPPORTED_PLATFORMS.ANDROID,
       platformApplicationArn: ANDROID_ARN,
-      sns: {region: SNS_REGION, apiVersion: '2014-02-01'}
-    });
+      sns: { region: SNS_REGION, apiVersion: '2014-02-01' }
+    })
 
-    assert(sns);
-    assert(sns.getApiVersion() === '2014-02-01');
-    assert(sns.getRegion() === SNS_REGION);
-    assert(sns.getPlatformApplicationArn() === ANDROID_ARN);
-  });
+    assert(sns)
+    assert(sns.getApiVersion() === '2014-02-01')
+    assert(sns.getRegion() === SNS_REGION)
+    assert(sns.getPlatformApplicationArn() === ANDROID_ARN)
+  })
 
   // Replace SNS instance for each test
-  beforeEach(function() {
+  beforeEach(function () {
     sns = new SNS({
       platform: SNS.SUPPORTED_PLATFORMS.ANDROID,
       region: SNS_REGION,
@@ -88,288 +89,292 @@ describe('SNS Module.', function() {
       accessKeyId: SNS_ACCESS_KEY,
       secretAccessKey: SNS_SECRET_ACCESS_KEY,
       platformApplicationArn: ANDROID_ARN
-    });
-  });
+    })
+  })
 
-  it('Should return PlatformApplications list', function(done) {
-    sns.getApplications(function(err, apps) {
-      assert(!err);
-      assert(apps);
-      assert(apps.length >= 0);
-      done();
-    });
-  });
+  it('Should return PlatformApplications list', function (done) {
+    sns.getApplications(function (err, apps) {
+      assert(!err)
+      assert(apps)
+      assert(apps.length >= 0)
+      done()
+    })
+  })
 
-  it('Should return Endpoints list for given PlatformApplication', function(done) {
-    sns.getUsers(function(err, users) {
-      assert(!err);
-      assert(users);
-      assert(users.length >= 0);
-      done();
-    });
-  });
+  it('Should return Endpoints list for given PlatformApplication', function (done) {
+    sns.getUsers(function (err, users) {
+      assert(!err)
+      assert(users)
+      assert(users.length >= 0)
+      done()
+    })
+  })
 
-  it('Should add an Android user.', function(done) {
+  it('Should add an Android user.', function (done) {
     sns.addUser('somefakedeviceidthatimadeup', JSON.stringify({
       username: 'fakeuser'
-    }), function(err, endpointArn) {
-      assert(!err);
-      assert(endpointArn);
-      done();
-    });
-  });
+    }), function (err, endpointArn) {
+      assert(!err)
+      assert(endpointArn)
+      done()
+    })
+  })
 
-  it('Should retrieve a user by their EndpointArn and update their properties.', function(done) {
+  it('Should retrieve a user by their EndpointArn and update their properties.', function (done) {
     sns.addUser('anotherfakedeviceidthatimadeup', JSON.stringify({
       username: 'fakeuserforattributetest'
-    }), function(err, endpointArn) {
-      sns.getUser(endpointArn, function(err, res) {
-
+    }), function (err, endpointArn) {
+      assert(!err)
+      sns.getUser(endpointArn, function (err, res) {
+        assert(!err)
         var attributes = {
           CustomUserData: {
             user_id: 'updated-attribute-user-id'
           },
           Enabled: 'true'
-        };
-        sns.setAttributes(res.EndpointArn, attributes, function(err, res) {
-          assert(!err);
-          assert(res === attributes);
+        }
+        sns.setAttributes(res.EndpointArn, attributes, function (err, res) {
+          assert(!err)
+          assert(res === attributes)
 
-          sns.getUser(endpointArn, function(err, res) {
-            assert(!err);
-            assert(res.EndpointArn === endpointArn);
-            assert(res.Attributes);
-            assert(res.Attributes.Enabled === attributes.Enabled);
-            assert(res.Attributes.CustomUserData);
-            var responseUserData = JSON.parse(res.Attributes.CustomUserData);
-            var userData = JSON.parse(attributes.CustomUserData);
-            assert(responseUserData.user_id === userData.user_id);
+          sns.getUser(endpointArn, function (err, res) {
+            assert(!err)
+            assert(res.EndpointArn === endpointArn)
+            assert(res.Attributes)
+            assert(res.Attributes.Enabled === attributes.Enabled)
+            assert(res.Attributes.CustomUserData)
+            var responseUserData = JSON.parse(res.Attributes.CustomUserData)
+            var userData = JSON.parse(attributes.CustomUserData)
+            assert(responseUserData.user_id === userData.user_id)
 
-            var emptyAttributes = {}; // empty attributes should generate an error
-            sns.setAttributes(endpointArn, emptyAttributes, function(err, res) {
-              assert(err);
+            var emptyAttributes = {} // empty attributes should generate an error
+            sns.setAttributes(endpointArn, emptyAttributes, function (err, res) {
+              assert(err)
 
-              sns.deleteUser(endpointArn, function(err) {
+              sns.deleteUser(endpointArn, function (err) {
                 // Cleanup: delete test user we created so that we can re-run the test
-                done();
-              });
-            });
-          });
-        });
-      });
-    });
-  });
+                done(err)
+              })
+            })
+          })
+        })
+      })
+    })
+  })
 
-  it('Should retrieve a user by their EndpointArn and delete them', function(done) {
+  it('Should retrieve a user by their EndpointArn and delete them', function (done) {
     sns.addUser('somefakedeviceidthatimadeup', JSON.stringify({
       username: 'fakeuser'
-    }), function(err, endpointArn) {
-      sns.getUser(endpointArn, function(err, res) {
-        assert(!err);
-        assert(res.EndpointArn === endpointArn);
-        done();
+    }), function (err, endpointArn) {
+      assert(!err)
+      sns.getUser(endpointArn, function (err, res) {
+        assert(!err)
+        assert(res.EndpointArn === endpointArn)
+        done()
 
-        sns.deleteUser(res.EndpointArn, function(err) {
-          assert(!err);
-          assert(res.ResponseMetadata);
-        });
-      });
-    });
-  });
+        sns.deleteUser(res.EndpointArn, function (err) {
+          assert(!err)
+          assert(res.ResponseMetadata)
+        })
+      })
+    })
+  })
 
-  it('Should get all users on this PlatformApplication', function(done) {
-    sns.getUsers(function(err, users) {
-      assert(!err);
-      assert(users);
-      assert(users.length >= 0);
-      done();
-    });
-  });
+  it('Should get all users on this PlatformApplication', function (done) {
+    sns.getUsers(function (err, users) {
+      assert(!err)
+      assert(users)
+      assert(users.length >= 0)
+      done()
+    })
+  })
 
-  it('Should send a message to all users on PlatformApplication, will add one first to ensure user exists.', function(done) {
+  it('Should send a message to all users on PlatformApplication, will add one first to ensure user exists.', function (done) {
     sns.addUser('somefakedeviceidthatimadeupagain', JSON.stringify({
       username: 'fakeuser2'
-    }), function(err, endpointArn) {
-      assert(!err);
-      assert(endpointArn);
+    }), function (err, endpointArn) {
+      assert(!err)
+      assert(endpointArn)
 
-      sns.broadcastMessage('Hello to ALL the devices!', function(err, users) {
-        assert(!err);
-        done();
-      });
-    });
-  });
+      sns.broadcastMessage('Hello to ALL the devices!', function (err, users) {
+        assert(!err)
+        done()
+      })
+    })
+  })
 
-  it('Should create a user and send a message to that Android user.', function(done) {
+  it('Should create a user and send a message to that Android user.', function (done) {
     sns.addUser('somefakedeviceidthatimadeup', JSON.stringify({
       username: 'fakeuser'
-    }), function(err, endpointArn) {
+    }), function (err, endpointArn) {
+      assert(!err)
       sns.sendMessage(endpointArn, {
         data: 'Hello World',
         moreData: 'Hello Universe'
-      }, function(err, res) {
-        assert(!err);
-        assert(res);
-        assert.strictEqual(typeof res, 'string');
-        done();
+      }, function (err, res) {
+        assert(!err)
+        assert(res)
+        assert.strictEqual(typeof res, 'string')
+        done()
       })
-    });
-  });
-
-  it('Should send a message to a phone number.', function(done) {
-    sns.sendMessage(PHONE_NUMBER, {
-      default:'Message title',
-      sms: 'Message body'
-    }, function(err, res) {
-      assert(!err);
-      assert(res);
-      assert.strictEqual(typeof res, 'string');
-      done();
     })
-  });
+  })
 
-  it('Should create a topic.', function(done) {
-    sns.createTopic('this_is_a_test_dummy_486438735', function(err, topicArn) {
-      assert(!err);
-      assert(topicArn);
-      theTopicArnThatThisTestCreated = topicArn;
-      done();
-    });
-  });
+  it('Should send a message to a phone number.', function (done) {
+    sns.sendMessage(PHONE_NUMBER, {
+      default: 'Message title',
+      sms: 'Message body'
+    }, function (err, res) {
+      assert(!err)
+      assert(res)
+      assert.strictEqual(typeof res, 'string')
+      done()
+    })
+  })
 
-  it('Should list topics.', function(done) {
-    sns.getTopics(function(err, topics) {
-      assert(!err);
-      assert(topics);
-      assert(topics.length > 0);
-      var theTopicThatWasCreatedEarlier = topics.filter(function(topic) {
-        return topic.TopicArn === theTopicArnThatThisTestCreated;
-      })[0];
+  it('Should create a topic.', function (done) {
+    sns.createTopic('this_is_a_test_dummy_486438735', function (err, topicArn) {
+      assert(!err)
+      assert(topicArn)
+      theTopicArnThatThisTestCreated = topicArn
+      done()
+    })
+  })
+
+  it('Should list topics.', function (done) {
+    sns.getTopics(function (err, topics) {
+      assert(!err)
+      assert(topics)
+      assert(topics.length > 0)
+      var theTopicThatWasCreatedEarlier = topics.filter(function (topic) {
+        return topic.TopicArn === theTopicArnThatThisTestCreated
+      })[0]
       assert(theTopicThatWasCreatedEarlier)
-      done();
-    });
-  });
+      done()
+    })
+  })
 
-  it('Should subscribe a user to a topic.', function(done) {
+  it('Should subscribe a user to a topic.', function (done) {
     sns.addUser('yetanotherfakedeviceid', JSON.stringify({
       username: 'anotherfakeuser'
-    }), function(err, endpointArn) {
-      sns.subscribe(endpointArn, theTopicArnThatThisTestCreated, function(err, subscriptionArn) {
-        assert(!err);
-        assert(subscriptionArn);
-        thePushSubscriptionArnThatThisTestCreated = subscriptionArn;
-        done();
-      });
-    });
-  });
+    }), function (err, endpointArn) {
+      assert(!err)
+      sns.subscribe(endpointArn, theTopicArnThatThisTestCreated, function (err, subscriptionArn) {
+        assert(!err)
+        assert(subscriptionArn)
+        thePushSubscriptionArnThatThisTestCreated = subscriptionArn
+        done()
+      })
+    })
+  })
 
-  it('Should subscribe a phone number to a topic.', function(done) {
-    sns.subscribeWithProtocol(PHONE_NUMBER, theTopicArnThatThisTestCreated, 'sms', function(err, subscriptionArn) {
-      assert(!err);
-      assert(subscriptionArn);
-      thePhoneSubscriptionArnThatThisTestCreated = subscriptionArn;
-      done();
-    });
-  });
+  it('Should subscribe a phone number to a topic.', function (done) {
+    sns.subscribeWithProtocol(PHONE_NUMBER, theTopicArnThatThisTestCreated, 'sms', function (err, subscriptionArn) {
+      assert(!err)
+      assert(subscriptionArn)
+      thePhoneSubscriptionArnThatThisTestCreated = subscriptionArn
+      done()
+    })
+  })
 
-  it('Should list all subscriptions.', function(done) {
-    sns.getSubscriptions(function(err, subscriptions) {
-      assert(!err);
-      assert(subscriptions);
-      assert(subscriptions.length > 0);
-      var theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function(subscription) {
-        return subscription.SubscriptionArn === thePushSubscriptionArnThatThisTestCreated;
-      })[0];
+  it('Should list all subscriptions.', function (done) {
+    sns.getSubscriptions(function (err, subscriptions) {
+      assert(!err)
+      assert(subscriptions)
+      assert(subscriptions.length > 0)
+      var theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function (subscription) {
+        return subscription.SubscriptionArn === thePushSubscriptionArnThatThisTestCreated
+      })[0]
       assert(theSubscriptionThatWasCreatedEarlier)
-      theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function(subscription) {
-        return subscription.SubscriptionArn === thePhoneSubscriptionArnThatThisTestCreated;
-      })[0];
+      theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function (subscription) {
+        return subscription.SubscriptionArn === thePhoneSubscriptionArnThatThisTestCreated
+      })[0]
       assert(theSubscriptionThatWasCreatedEarlier)
-      done();
-    });
-  });
+      done()
+    })
+  })
 
-  it('Should list subscriptions by topic.', function(done) {
-    sns.getSubscriptions(theTopicArnThatThisTestCreated, function(err, subscriptions) {
-      assert(!err);
-      assert(subscriptions);
-      assert(subscriptions.length > 0);
-      var theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function(subscription) {
-        return subscription.SubscriptionArn === thePushSubscriptionArnThatThisTestCreated;
-      })[0];
+  it('Should list subscriptions by topic.', function (done) {
+    sns.getSubscriptions(theTopicArnThatThisTestCreated, function (err, subscriptions) {
+      assert(!err)
+      assert(subscriptions)
+      assert(subscriptions.length > 0)
+      var theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function (subscription) {
+        return subscription.SubscriptionArn === thePushSubscriptionArnThatThisTestCreated
+      })[0]
       assert(theSubscriptionThatWasCreatedEarlier)
-      theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function(subscription) {
-        return subscription.SubscriptionArn === thePhoneSubscriptionArnThatThisTestCreated;
-      })[0];
+      theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function (subscription) {
+        return subscription.SubscriptionArn === thePhoneSubscriptionArnThatThisTestCreated
+      })[0]
       assert(theSubscriptionThatWasCreatedEarlier)
-      done();
-    });
-  });
+      done()
+    })
+  })
 
-  it('Should fail to publish a message to a topic if message body is missing "default" key.', function(done) {
+  it('Should fail to publish a message to a topic if message body is missing "default" key.', function (done) {
     sns.publishToTopic(theTopicArnThatThisTestCreated, {
       foo: 'missing top-level key "default"'
-    }, function(err, res) {
-      assert(err);
-      assert.equal(err.message, 'Argument "message" must be in SNS multi-platform publishing format.');
-      done();
+    }, function (err, res) {
+      assert(err)
+      assert.strictEqual(err.message, 'Argument "message" must be in SNS multi-platform publishing format.')
+      done()
     })
-  });
+  })
 
-  it('Should fail to publish a message to a topic if "default" value in message body is not a string.', function(done) {
+  it('Should fail to publish a message to a topic if "default" value in message body is not a string.', function (done) {
     sns.publishToTopic(theTopicArnThatThisTestCreated, {
-      'default': {
+      default: {
         that: 'is_not_a_string_but_an_object'
       }
-    }, function(err, res) {
-      assert(err);
-      assert.equal(err.message, 'Argument "message" must be in SNS multi-platform publishing format.');
-      done();
+    }, function (err, res) {
+      assert(err)
+      assert.strictEqual(err.message, 'Argument "message" must be in SNS multi-platform publishing format.')
+      done()
     })
-  });
+  })
 
-  it('Should publish a message to a topic.', function(done) {
+  it('Should publish a message to a topic.', function (done) {
     var messageBody = {
-      'default': JSON.stringify({
+      default: JSON.stringify({
         data: 'Hello Topic',
         moreData: 'Hello Topic'
       }),
-      'APNS': JSON.stringify({
+      APNS: JSON.stringify({
         aps: {
           alert: 'test dummy text'
         }
       }),
-      'GCM': JSON.stringify({
+      GCM: JSON.stringify({
         some: 'value'
       }),
-      'sms': 'SMS for topic'
+      sms: 'SMS for topic'
     }
-    sns.publishToTopic(theTopicArnThatThisTestCreated, messageBody, function(err, res) {
-      assert(!err);
-      assert(res);
-      assert.strictEqual(typeof res, 'string');
-      done();
+    sns.publishToTopic(theTopicArnThatThisTestCreated, messageBody, function (err, res) {
+      assert(!err)
+      assert(res)
+      assert.strictEqual(typeof res, 'string')
+      done()
     })
-  });
+  })
 
-  it('Should unsubscribe a user from a topic.', function(done) {
-    sns.unsubscribe(thePushSubscriptionArnThatThisTestCreated, function(err) {
-      assert(!err);
-      done();
-    });
-  });
+  it('Should unsubscribe a user from a topic.', function (done) {
+    sns.unsubscribe(thePushSubscriptionArnThatThisTestCreated, function (err) {
+      assert(!err)
+      done()
+    })
+  })
 
-  it('Should unsubscribe a phone number from a topic.', function(done) {
-    sns.unsubscribe(thePhoneSubscriptionArnThatThisTestCreated, function(err) {
-      assert(!err);
-      done();
-    });
-  });
+  it('Should unsubscribe a phone number from a topic.', function (done) {
+    sns.unsubscribe(thePhoneSubscriptionArnThatThisTestCreated, function (err) {
+      assert(!err)
+      done()
+    })
+  })
 
-  it('Should delete a topic.', function(done) {
-    sns.deleteTopic(theTopicArnThatThisTestCreated, function(err) {
-      assert(!err);
-      done();
-    });
-  });
-});
+  it('Should delete a topic.', function (done) {
+    sns.deleteTopic(theTopicArnThatThisTestCreated, function (err) {
+      assert(!err)
+      done()
+    })
+  })
+})
