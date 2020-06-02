@@ -14,7 +14,7 @@ var SNS_ACCESS_KEY = process.env['SNS_ACCESS_KEY'],
 var sns = null;
 
 describe('SNS Module.', function() {
-  this.timeout(10000);
+  this.timeout(20000);
 
   var theTopicArnThatThisTestCreated;
   var thePushSubscriptionArnThatThisTestCreated, thePhoneSubscriptionArnThatThisTestCreated;
