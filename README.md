@@ -9,13 +9,16 @@
 
 This fork takes the [original work](https://github.com/evanshortiss/sns-mobile) over by:
 * upgrading dependencies (AWS SDK, Asyn,c, Mocha, Node version, etc.)
-* adding support for SMS notifications (as detailled in this unmerged [PR](https://github.com/evanshortiss/sns-mobile/pull/30))
+* adding support for SMS notifications (managed as a new platform, see this unmerged [PR](https://github.com/evanshortiss/sns-mobile/pull/30) for details)
+* adding support for e-mail notifications (similar approach to previous one)
 * adding lint, coverage and publication stages
 * adding Travis CI
 
 # SNS Mobile Push
 
-Module to make interacting with mobile push notifications for iOS and Android easier. Wraps the Amazon aws-sdk node module. The idea is that you can create an object to represent each Platform Application you plan to use and remove the excess features that aren't needed for Android and iOS applications.
+Module to make interacting with mobile push notifications for iOS and Android easier by wrapping the Amazon aws-sdk node module. The idea is that you can create an object to represent each Platform Application you plan to use (eg Android and iOS) and remove the excess features that aren't needed for Android and iOS applications.
+
+Note that different endpoint types can subscribe to a given topic in AWS (eg devices for push notification, phone numbers for SMS, email address for mailing, etc.). Although this interface segregates access according to the application platform (eg Android or iOS - AWS application protocol) and the protocol (eg sms or email AWS protocol), take care that when using topics you can actually target multiple platforms or protocols. However, you can also name topics differently for each application platform or protocol so that you really segregate topic publications as well.
 
 > **If you were/are using 1.0.0 or 1.0.1 please upgrade to 1.0.2, it fixes a major bug where messages were not sending.**
 

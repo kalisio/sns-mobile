@@ -22,8 +22,8 @@ describe('SNS Module.', function () {
 
   var theTopicArnThatThisTestCreated
   var thePushSubscriptionArnThatThisTestCreated,
-    thePhoneSubscriptionArnThatThisTestCreated,
-    theEmailSubscriptionArnThatThisTestCreated
+    thePhoneSubscriptionArnThatThisTestCreated
+    // theEmailSubscriptionArnThatThisTestCreated
 
   it('Should have events and supported platforms exposed on the interface', function () {
     assert(SNS.SUPPORTED_PLATFORMS)
@@ -228,7 +228,6 @@ describe('SNS Module.', function () {
     }), function (err, endpointArn) {
       assert(!err)
       sns.sendMessage(endpointArn, 'Application test message', function (err, res) {
-        console.log(err)
         assert(!err)
         assert(res)
         assert.strictEqual(typeof res, 'string')
@@ -248,7 +247,6 @@ describe('SNS Module.', function () {
 
   it('Should send a message to an email address.', function (done) {
     snsForEmail.sendMessage(EMAIL_ADDRESS, 'Email test message', function (err, res) {
-      console.log(err)
       assert(!err)
       assert(res)
       assert.strictEqual(typeof res, 'string')
@@ -304,7 +302,6 @@ describe('SNS Module.', function () {
   /* Email subscription requires the user to confirm it via a link, not easy to be done in tests
   it('Should subscribe an email address to a topic.', function (done) {
     snsForEmail.subscribe(EMAIL_ADDRESS, theTopicArnThatThisTestCreated, function (err, subscriptionArn) {
-      console.log(subscriptionArn)
       assert(!err)
       assert(subscriptionArn)
       theEmailSubscriptionArnThatThisTestCreated = subscriptionArn
