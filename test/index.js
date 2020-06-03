@@ -1,4 +1,4 @@
-console.warn('Ensure that SNS_SECRET_ACCESS_KEY, SNS_ACCESS_KEY, SNS_ANDROID_ARN and SNS_PHONE_NUMBER env vars are set for these tests!\n')
+console.warn('Ensure that appropriate env vars are set for these tests!\n')
 
 var assert = require('assert')
 var AWS = require('aws-sdk')
@@ -10,15 +10,20 @@ var ANDROID_ARN = process.env.SNS_ANDROID_ARN
 // TODO
 // var iOS_ARN = process.env.SNS_iOS_ARN
 var PHONE_NUMBER = process.env.SNS_PHONE_NUMBER
+var EMAIL_ADDRESS = process.env.SNS_EMAIL_ADDRESS
 var SNS_REGION = 'eu-west-1'
 
 var sns = null
+var snsForSms = null
+var snsForEmail = null
 
 describe('SNS Module.', function () {
   this.timeout(20000)
 
   var theTopicArnThatThisTestCreated
-  var thePushSubscriptionArnThatThisTestCreated, thePhoneSubscriptionArnThatThisTestCreated
+  var thePushSubscriptionArnThatThisTestCreated,
+    thePhoneSubscriptionArnThatThisTestCreated,
+    theEmailSubscriptionArnThatThisTestCreated
 
   it('Should have events and supported platforms exposed on the interface', function () {
     assert(SNS.SUPPORTED_PLATFORMS)
@@ -89,6 +94,20 @@ describe('SNS Module.', function () {
       accessKeyId: SNS_ACCESS_KEY,
       secretAccessKey: SNS_SECRET_ACCESS_KEY,
       platformApplicationArn: ANDROID_ARN
+    })
+    snsForSms = new SNS({
+      platform: SNS.SUPPORTED_PLATFORMS.SMS,
+      region: SNS_REGION,
+      apiVersion: '2010-03-31',
+      accessKeyId: SNS_ACCESS_KEY,
+      secretAccessKey: SNS_SECRET_ACCESS_KEY
+    })
+    snsForEmail = new SNS({
+      platform: SNS.SUPPORTED_PLATFORMS.EMAIL,
+      region: SNS_REGION,
+      apiVersion: '2010-03-31',
+      accessKeyId: SNS_ACCESS_KEY,
+      secretAccessKey: SNS_SECRET_ACCESS_KEY
     })
   })
 
@@ -208,10 +227,8 @@ describe('SNS Module.', function () {
       username: 'fakeuser'
     }), function (err, endpointArn) {
       assert(!err)
-      sns.sendMessage(endpointArn, {
-        data: 'Hello World',
-        moreData: 'Hello Universe'
-      }, function (err, res) {
+      sns.sendMessage(endpointArn, 'Application test message', function (err, res) {
+        console.log(err)
         assert(!err)
         assert(res)
         assert.strictEqual(typeof res, 'string')
@@ -221,10 +238,17 @@ describe('SNS Module.', function () {
   })
 
   it('Should send a message to a phone number.', function (done) {
-    sns.sendMessage(PHONE_NUMBER, {
-      default: 'Message title',
-      sms: 'Message body'
-    }, function (err, res) {
+    snsForSms.sendMessage(PHONE_NUMBER, 'SMS test message', function (err, res) {
+      assert(!err)
+      assert(res)
+      assert.strictEqual(typeof res, 'string')
+      done()
+    })
+  })
+
+  it('Should send a message to an email address.', function (done) {
+    snsForEmail.sendMessage(EMAIL_ADDRESS, 'Email test message', function (err, res) {
+      console.log(err)
       assert(!err)
       assert(res)
       assert.strictEqual(typeof res, 'string')
@@ -269,13 +293,25 @@ describe('SNS Module.', function () {
   })
 
   it('Should subscribe a phone number to a topic.', function (done) {
-    sns.subscribeWithProtocol(PHONE_NUMBER, theTopicArnThatThisTestCreated, 'sms', function (err, subscriptionArn) {
+    snsForSms.subscribe(PHONE_NUMBER, theTopicArnThatThisTestCreated, function (err, subscriptionArn) {
       assert(!err)
       assert(subscriptionArn)
       thePhoneSubscriptionArnThatThisTestCreated = subscriptionArn
       done()
     })
   })
+
+  /* Email subscription requires the user to confirm it via a link, not easy to be done in tests
+  it('Should subscribe an email address to a topic.', function (done) {
+    snsForEmail.subscribe(EMAIL_ADDRESS, theTopicArnThatThisTestCreated, function (err, subscriptionArn) {
+      console.log(subscriptionArn)
+      assert(!err)
+      assert(subscriptionArn)
+      theEmailSubscriptionArnThatThisTestCreated = subscriptionArn
+      done()
+    })
+  })
+  */
 
   it('Should list all subscriptions.', function (done) {
     sns.getSubscriptions(function (err, subscriptions) {
@@ -290,6 +326,12 @@ describe('SNS Module.', function () {
         return subscription.SubscriptionArn === thePhoneSubscriptionArnThatThisTestCreated
       })[0]
       assert(theSubscriptionThatWasCreatedEarlier)
+      /* Email subscription requires the user to confirm it via a link, not easy to be done in tests
+      theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function (subscription) {
+        return subscription.SubscriptionArn === theEmailSubscriptionArnThatThisTestCreated
+      })[0]
+      assert(theSubscriptionThatWasCreatedEarlier)
+      */
       done()
     })
   })
@@ -307,6 +349,12 @@ describe('SNS Module.', function () {
         return subscription.SubscriptionArn === thePhoneSubscriptionArnThatThisTestCreated
       })[0]
       assert(theSubscriptionThatWasCreatedEarlier)
+      /* Email subscription requires the user to confirm it via a link, not easy to be done in tests
+      theSubscriptionThatWasCreatedEarlier = subscriptions.filter(function (subscription) {
+        return subscription.SubscriptionArn === theEmailSubscriptionArnThatThisTestCreated
+      })[0]
+      assert(theSubscriptionThatWasCreatedEarlier)
+      */
       done()
     })
   })
@@ -335,19 +383,11 @@ describe('SNS Module.', function () {
 
   it('Should publish a message to a topic.', function (done) {
     var messageBody = {
-      default: JSON.stringify({
-        data: 'Hello Topic',
-        moreData: 'Hello Topic'
-      }),
-      APNS: JSON.stringify({
-        aps: {
-          alert: 'test dummy text'
-        }
-      }),
-      GCM: JSON.stringify({
-        some: 'value'
-      }),
-      sms: 'SMS for topic'
+      default: 'Default message',
+      APNS: { aps: { alert: 'Message for iOS' } },
+      GCM: { data: { message: 'Message for Android' } },
+      sms: 'Message for SMS',
+      email: 'Message for email'
     }
     sns.publishToTopic(theTopicArnThatThisTestCreated, messageBody, function (err, res) {
       assert(!err)
@@ -370,6 +410,15 @@ describe('SNS Module.', function () {
       done()
     })
   })
+
+  /* Email subscription requires the user to confirm it via a link, not easy to be done in tests
+  it('Should unsubscribe an email address from a topic.', function (done) {
+    sns.unsubscribe(theEmailSubscriptionArnThatThisTestCreated, function (err) {
+      assert(!err)
+      done()
+    })
+  })
+  */
 
   it('Should delete a topic.', function (done) {
     sns.deleteTopic(theTopicArnThatThisTestCreated, function (err) {
