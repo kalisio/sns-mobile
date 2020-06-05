@@ -10,12 +10,12 @@ var ANDROID_ARN = process.env.SNS_ANDROID_ARN
 // TODO
 // var iOS_ARN = process.env.SNS_iOS_ARN
 var PHONE_NUMBER = process.env.SNS_PHONE_NUMBER
-var EMAIL_ADDRESS = process.env.SNS_EMAIL_ADDRESS
+// var EMAIL_ADDRESS = process.env.SNS_EMAIL_ADDRESS
 var SNS_REGION = 'eu-west-1'
 
 var sns = null
 var snsForSms = null
-var snsForEmail = null
+// var snsForEmail = null
 
 describe('SNS Module.', function () {
   this.timeout(20000)
