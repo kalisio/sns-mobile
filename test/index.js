@@ -102,6 +102,7 @@ describe('SNS Module.', function () {
       accessKeyId: SNS_ACCESS_KEY,
       secretAccessKey: SNS_SECRET_ACCESS_KEY
     })
+    /*
     snsForEmail = new SNS({
       platform: SNS.SUPPORTED_PLATFORMS.EMAIL,
       region: SNS_REGION,
@@ -109,6 +110,7 @@ describe('SNS Module.', function () {
       accessKeyId: SNS_ACCESS_KEY,
       secretAccessKey: SNS_SECRET_ACCESS_KEY
     })
+    */
   })
 
   it('Should return PlatformApplications list', function (done) {
